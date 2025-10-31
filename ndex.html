@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тест по СиАОД - Самопроверка</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f7fa;
+            color: #333;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 15px;
+        }
+        .question {
+            margin-bottom: 25px;
+            padding: 20px;
+            border-radius: 8px;
+            background-color: #f8f9fa;
+            border-left: 4px solid #3498db;
+            transition: all 0.3s;
+        }
+        .question.correct {
+            border-left-color: #28a745;
+            background-color: #e8f5e8;
+        }
+        .question.incorrect {
+            border-left-color: #dc3545;
+            background-color: #fde8e8;
+        }
+        .question-number {
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+        .question-text {
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+        .options {
+            margin-left: 20px;
+        }
+        .option {
+            margin-bottom: 8px;
+            padding: 8px;
+            border-radius: 4px;
+            transition: background-color 0.2s;
+            display: flex;
+            align-items: center;
+        }
+        .option:hover {
+            background-color: #e9ecef;
+        }
+        .option input {
+            margin-right: 10px;
+        }
+        .result {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 4px;
+            font-weight: bold;
+            display: none;
+        }
+        .correct-result {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .incorrect-result {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        #results {
+            margin-top: 30px;
+            padding: 20px;
+            border-radius: 8px;
+            background-color: #e8f4fc;
+            display: none;
+        }
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+            font-size: 18px;
+        }
+        .stat {
+            text-align: center;
+        }
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        #score {
+            color: #e74c3c;
+        }
+        #correct-count {
+            color: #27ae60;
+        }
+        #incorrect-count {
+            color: #e74c3c;
+        }
+        .explanation {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 4px;
+            font-size: 0.9em;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Тест по СиАОД - Самопроверка</h1>
+        
+        <div id="questions-container">
+            <!-- Вопросы будут добавлены динамически -->
+        </div>
+        
+        <div class="controls">
+            <button id="show-results-btn">Показать результаты</button>
+            <button id="reset-btn">Сбросить все ответы</button>
+        </div>
+        
+        <div id="results">
+            <h2>Результаты теста</h2>
+            <div class="stats">
+                <div class="stat">
+                    <div>Правильных ответов:</div>
+                    <div id="correct-count" class="stat-value">0</div>
+                </div>
+                <div class="stat">
+                    <div>Неправильных ответов:</div>
+                    <div id="incorrect-count" class="stat-value">0</div>
+                </div>
+                <div class="stat">
+                    <div>Общий балл:</div>
+                    <div id="score" class="stat-value">0%</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Вопросы и варианты ответов
+        const questions = [
+            {
+                number: 1,
+                text: "Какая структура данных относится к категории линейных списков?",
+                options: [
+                    "Дек",
+                    "Бинарное дерево",
+                    "Граф",
+                    "Хеш-таблица"
+                ],
+                correct: 0,
+                explanation: "Дек (double-ended queue) - это линейная структура данных, позволяющая добавлять и удалять элементы с обоих концов."
+            },
+            {
+                number: 2,
+                text: "Какие нотации можно использовать для асимптотической оценки сложности алгоритма в лучшем случае?",
+                options: [
+                    "Только О-большое",
+                    "Только Ω-большое",
+                    "Ω-большое и Θ-тета",
+                    "Только Θ-тета"
+                ],
+                correct: 2,
+                explanation: "Ω-нотация используется для оценки нижней границы (лучший случай), Θ-нотация - для точной оценки, когда верхняя и нижняя границы совпадают."
+            },
+            {
+                number: 3,
+                text: "Имеется узел АВЛ-дерева, для которого |hl-hr|=0, где hl, hr высота левого и правого поддерева соответственно. В левое поддерево вставляется новый ключ, после этого:",
+                options: [
+                    "Требуется перестройка дерева",
+                    "Не требуется перестройка дерева",
+                    "Требуется только один поворот",
+                    "Требуется два поворота"
+                ],
+                correct: 1,
+                explanation: "После вставки в левое поддерево разница высот станет 1, что допустимо для АВЛ-дерева (допустимые значения: -1, 0, 1)."
+            },
+            {
+                number: 4,
+                text: "Что обеспечивает метод пробирования \"двойное хеширование\" при вставке элемента в хеш-таблицу, разрешающей коллизии по методу открытого адреса?",
+                options: [
+                    "Вычисление смещения, не зависящее от значения ключа",
+                    "Минимизацию кластеризации",
+                    "Максимальное заполнение таблицы",
+                    "Вычисление смещения, зависящее от значения ключа"
+                ],
+                correct: 3,
+                explanation: "Двойное хеширование использует вторую хеш-функцию для вычисления шага смещения при коллизиях, что уменьшает кластеризацию."
+            },
+            {
+                number: 5,
+                text: "Какие нотации можно использовать для асимптотической оценки сложности алгоритма в худшем случае?",
+                options: [
+                    "Только О-большое",
+                    "Только Ω-большое",
+                    "О-большое и Θ-тета",
+                    "Только Θ-тета"
+                ],
+                correct: 2,
+                explanation: "О-нотация используется для оценки верхней границы (худший случай), Θ-нотация - для точной оценки, когда верхняя и нижняя границы совпадают."
+            },
+            {
+                number: 6,
+                text: "Что необходимо делать с большим объемом информации, связанной с каждым ключом:",
+                options: [
+                    "Хранить ее в хеш-таблице",
+                    "Не хранить ее в хеш-таблице",
+                    "Разделять на несколько таблиц",
+                    "Сжимать перед хранением"
+                ],
+                correct: 1,
+                explanation: "В хеш-таблице следует хранить только ключи и ссылки на данные, а сами данные размещать отдельно для эффективности работы таблицы."
+            },
+            {
+                number: 7,
+                text: "Какой зависимостью описывается функция вычислительной сложности алгоритма поиска по бинарному дереву в худшем случае (несбалансированное бинарное дерево)?",
+                options: [
+                    "f(n)=ϴ(1)",
+                    "f(n)=ϴ(log n)",
+                    "f(n)=ϴ(n)",
+                    "f(n)=ϴ(n²)"
+                ],
+                correct: 2,
+                explanation: "В несбалансированном бинарном дереве поиск может выродиться в линейный, поэтому сложность в худшем случае O(n)."
+            },
+            {
+                number: 8,
+                text: "Бинарное дерево - это:",
+                options: [
+                    "дерево, у которого каждый узел может содержать до двух дочерних узлов",
+                    "дерево, у которого все узлы имеют по два потомка",
+                    "дерево, у которого высота левого и правого поддеревьев отличается не более чем на 1",
+                    "дерево, содержащее только два узла"
+                ],
+                correct: 0,
+                explanation: "Бинарное дерево определяется как дерево, в котором каждый узел имеет не более двух потомков."
+            },
+            {
+                number: 9,
+                text: "Отличительная особенность алгоритма Бойера-Мура-Хорспула:",
+                options: [
+                    "Сравнение символов производится с начала образца",
+                    "Использует префикс-функцию",
+                    "После каждого неудачного сравнения производится сдвиг образца вправо в соответствии с эвристикой стоп-символов",
+                    "Основан на хеш-функции"
+                ],
+                correct: 2,
+                explanation: "Алгоритм Бойера-Мура-Хорспула использует эвристику стоп-символов для определения величины сдвига при несовпадении."
+            },
+            {
+                number: 10,
+                text: "Какое из условий проверяется при определении сбалансированности красно-черного дерева?",
+                options: [
+                    "Все узлы должны быть красного цвета",
+                    "Любой путь от корня дерева к листу содержит одно и то же число черных узлов",
+                    "Высота левого и правого поддеревьев должна быть одинаковой",
+                    "Корень дерева должен быть черным"
+                ],
+                correct: 1,
+                explanation: "В красно-черном дереве все пути от корня к листьям должны содержать одинаковое количество черных узлов (свойство черной высоты)."
+            }
+            // Остальные вопросы можно добавить по аналогии
+        ];
+
+        // Инициализация страницы
+        document.addEventListener('DOMContentLoaded', function() {
+            const questionsContainer = document.getElementById('questions-container');
+            
+            // Создание вопросов
+            questions.forEach((question, index) => {
+                const questionElement = document.createElement('div');
+                questionElement.className = 'question';
+                questionElement.id = `question-${index}`;
+                
+                let optionsHTML = '';
+                question.options.forEach((option, optionIndex) => {
+                    optionsHTML += `
+                        <div class="option">
+                            <input type="radio" id="q${index}-opt${optionIndex}" name="q${index}" value="${optionIndex}">
+                            <label for="q${index}-opt${optionIndex}">${option}</label>
+                        </div>
+                    `;
+                });
+                
+                questionElement.innerHTML = `
+                    <div class="question-number">Вопрос ${question.number}</div>
+                    <div class="question-text">${question.text}</div>
+                    <div class="options">${optionsHTML}</div>
+                    <div class="result" id="result-${index}"></div>
+                    <div class="explanation" id="explanation-${index}">${question.explanation}</div>
+                `;
+                
+                questionsContainer.appendChild(questionElement);
+                
+                // Добавляем обработчики событий для радио-кнопок
+                question.options.forEach((option, optionIndex) => {
+                    const radioBtn = document.getElementById(`q${index}-opt${optionIndex}`);
+                    radioBtn.addEventListener('change', function() {
+                        checkAnswer(index, parseInt(this.value));
+                    });
+                });
+            });
+            
+            // Обработчик кнопки показа результатов
+            document.getElementById('show-results-btn').addEventListener('click', showResults);
+            
+            // Обработчик кнопки сброса
+            document.getElementById('reset-btn').addEventListener('click', resetAnswers);
+        });
+        
+        // Функция проверки ответа на конкретный вопрос
+        function checkAnswer(questionIndex, userAnswer) {
+            const question = questions[questionIndex];
+            const questionElement = document.getElementById(`question-${questionIndex}`);
+            const resultElement = document.getElementById(`result-${questionIndex}`);
+            const explanationElement = document.getElementById(`explanation-${questionIndex}`);
+            
+            if (userAnswer === question.correct) {
+                resultElement.textContent = "Правильно!";
+                resultElement.className = "result correct-result";
+                questionElement.classList.add('correct');
+                questionElement.classList.remove('incorrect');
+            } else {
+                resultElement.textContent = "Неправильно!";
+                resultElement.className = "result incorrect-result";
+                questionElement.classList.add('incorrect');
+                questionElement.classList.remove('correct');
+            }
+            
+            resultElement.style.display = 'block';
+            explanationElement.style.display = 'block';
+        }
+        
+        // Функция показа общих результатов
+        function showResults() {
+            let correctCount = 0;
+            let answeredCount = 0;
+            
+            questions.forEach((question, index) => {
+                const selectedOption = document.querySelector(`input[name="q${index}"]:checked`);
+                
+                if (selectedOption) {
+                    answeredCount++;
+                    const userAnswer = parseInt(selectedOption.value);
+                    
+                    if (userAnswer === question.correct) {
+                        correctCount++;
+                    }
+                }
+            });
+            
+            // Обновление статистики
+            document.getElementById('correct-count').textContent = correctCount;
+            document.getElementById('incorrect-count').textContent = answeredCount - correctCount;
+            
+            const totalQuestions = questions.length;
+            const score = Math.round((correctCount / totalQuestions) * 100);
+            document.getElementById('score').textContent = `${score}%`;
+            
+            // Показ результатов
+            document.getElementById('results').style.display = 'block';
+        }
+        
+        // Функция сброса всех ответов
+        function resetAnswers() {
+            questions.forEach((question, index) => {
+                const questionElement = document.getElementById(`question-${index}`);
+                questionElement.classList.remove('correct', 'incorrect');
+                
+                const resultElement = document.getElementById(`result-${index}`);
+                resultElement.style.display = 'none';
+                
+                const explanationElement = document.getElementById(`explanation-${index}`);
+                explanationElement.style.display = 'none';
+                
+                const selectedOption = document.querySelector(`input[name="q${index}"]:checked`);
+                if (selectedOption) {
+                    selectedOption.checked = false;
+                }
+            });
+            
+            document.getElementById('results').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
